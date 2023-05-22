@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Grocery-shop </title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    form {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 5px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+
+    button {
+      padding: 8px 16px;
+      font-size: 16px;
+      border: none;
+      background-color: #4caf50;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    h2 {
+      margin-top: 30px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 10px;
+      padding: 10px;
+      background-color: #f2f2f2;
+    }
+
+    .buy-button {
+      margin-left: 10px;
+    }
+
+    #msg {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Grocery-shop Online Form</h1>
+
+  <form id="item-form">
+    <label for="name">Item name:</label>
+    <input type="text" id="name" required><br>
+
+    <label for="description">Description:</label>
+    <input type="text" id="description" required><br>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" required><br>
+
+    <label for="quantity">Quantity:</label>
+    <input type="number" id="quantity" required><br>
+
+    <button type="submit" id="button">Add Item</button>
+  </form>
+
+  <h2>Item List</h2>
+  <h4 id="msg"></h4>
+
+  <ul id="item-list"></ul>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <script>
+    const nameInput = document.querySelector("#name");
+    const descriptionInput = document.querySelector("#description");
+    const priceInput = document.querySelector("#price");
+    const quantityInput = document.querySelector("#quantity");
+    const addButton = document.querySelector("#button");
+    const itemList = document.querySelector("#item-list");
+    const message = document.querySelector("#msg");
+
+    addButton.addEventListener('click', addItem);
+
+    displayItems();
+
+    async function addItem(event) {
+      event.preventDefault();
+
+      const name = nameInput.value;
+      const description = descriptionInput.value;
+      const price = priceInput.value;
+      const quantity = quantityInput.value;
+
+      const item = {
+        'name': name,
+        'description': description,
+        'price': price,
+        'quantity': quantity
+      };
+
+      try {
+        await axios.post("https://crudcrud.com/api/56c0f77f28524acea585881c04f3666c/Inventory", item);
+        nameInput.value = '';
+        descriptionInput.value = '';
+        priceInput.value = '';
+        quantityInput.value = '';
+        displayItems();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    async function displayItems() {
+      itemList.innerHTML = '';
+
+      try {
+        const res = await axios.get("https://crudcrud.com/api/56c0f77f28524acea585881c04f3666c/Inventory");
+        res.data.forEach((item) => {
+          const product = document.createElement('li');
+          const quantityText = item.quantity > 0 ? ` - Quantity: ${item.quantity}` : ' - Stock Empty';
+          product.textContent = `${item.name} - ${item.description} - ${item.price}${quantityText}`;
+         
+          const buy1Button = document.createElement('button');
+          buy1Button.textContent = 'Buy 1';
+          buy1Button.classList.add('buy-button');
+          buy1Button.addEventListener('click', async () => {
+            if (item.quantity > 0) {
+              try {
+                await axios.put(`https://crudcrud.com/api/56c0f77f28524acea585881c04f3666c/Inventory/${item._id}`, {
+                  name: item.name,
+                  description: item.description,
+                  price: item.price,
+                  quantity: item.quantity - 1
+                });
+                message.textContent = 'Success';
+                displayItems();
+              } catch (error) {
+                console.log(error);
+              }
+            } else {
+              message.textContent = 'Insufficient stock';
+            }
+          });
+
+          const buy2Button = document.createElement('button');
+          buy2Button.textContent = 'Buy 2';
+          buy2Button.classList.add('buy-button');
+          buy2Button.addEventListener('click', async () => {
+            if (item.quantity > 1) {
+              try {
+                await axios.put(`https://crudcrud.com/api/56c0f77f28524acea585881c04f3666c/Inventory/${item._id}`, {
+                  name: item.name,
+                  description: item.description,
+                  price: item.price,
+                  quantity: item.quantity - 2
+                });
+                message.textContent = 'Success';
+                displayItems();
+              } catch (error) {
+                console.log(error);
+              }
+            } else {
+              message.textContent = 'Insufficient stock';
+            }
+          });
+
+          const buy3Button = document.createElement('button');
+          buy3Button.textContent = 'Buy 3';
+          buy3Button.classList.add('buy-button');
+          buy3Button.addEventListener('click', async () => {
+            if (item.quantity > 2) {
+              try {
+                await axios.put(`https://crudcrud.com/api/56c0f77f28524acea585881c04f3666c/Inventory/${item._id}`, {
+                  name: item.name,
+                  description: item.description,
+                  price: item.price,
+                  quantity: item.quantity - 3
+                });
+                message.textContent = 'Success';
+                displayItems();
+              } catch (error) {
+                console.log(error);
+              }
+            } else {
+              message.textContent = 'Insufficient stock';
+            }
+          });
+
+          product.appendChild(buy1Button);
+          product.appendChild(buy2Button);
+          product.appendChild(buy3Button);
+
+          itemList.appendChild(product);
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  </script>
+</body>
+</html>
